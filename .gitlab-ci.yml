@@ -26,5 +26,3 @@ deploy to staging:
     --auto-scaling-group-name $ASG_NAME \
     --preferences '{"InstanceWarmup": 60, "MinHealthyPercentage": 50}' \
     --region $AWS_DEFAULT_REGION
-    - echo "Completed the deployment workflow"
-
