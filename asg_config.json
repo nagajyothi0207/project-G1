@@ -1,5 +1,5 @@
 {
-    "AutoScalingGroupName": "$ASG_NAME",
+    "AutoScalingGroupName": "test",
     "Preferences": {
         "InstanceWarmup": 60,
         "MinHealthyPercentage": 50
