@@ -7,9 +7,9 @@ deploy to staging:
   only:
     - master
   script:
-  - >
+  - |
     - echo "Running web_content Upload"
-    - aws --region $AWS_DEFAULT_REGION s3 cp ./web_content s3://$S3_BUCKET/ --recursive
+    - aws s3 cp ./web_content s3://$S3_BUCKET/ --recursive --region $AWS_DEFAULT_REGION
     - echo "Content Upload is successful"
-    - 'aws autoscaling start-instance-refresh --auto-scaling-group-name $ASG_NAME --preferences '{"InstanceWarmup": 60, "MinHealthyPercentage": 50}''
+    - aws autoscaling start-instance-refresh --auto-scaling-group-name $ASG_NAME --preferences '{"InstanceWarmup": 60, "MinHealthyPercentage": 50}' --region $AWS_DEFAULT_REGION
     - echo "Completed the deployment workflow"
