@@ -9,4 +9,5 @@ sed -i 's/Increment and Decrement counter/INCREMENT AND DECREMENT COUNTER/g' ./w
 git checkout -b $BRANCH master
 git add .
 git commit -am "Website Content is converted to UPPER CASE"
+git push --set-upstream origin master
 git push -o merge_request.create -o merge_request.target=master  origin $BRANCH
