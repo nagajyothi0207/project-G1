@@ -2,7 +2,6 @@
     "AutoScalingGroupName": "$ASG_NAME",
     "Preferences": {
         "InstanceWarmup": 60,
-        "MinHealthyPercentage": 50,
-        "AutoRollback": true
+        "MinHealthyPercentage": 50
     }
 }
