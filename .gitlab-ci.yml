@@ -1,6 +1,22 @@
 image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
 stages:
+  - build
   - deploy
+
+build the package:
+  stage: build
+  environment: 
+    name: staging
+  only:
+    - master
+  script: 
+    - echo "Running web_content Upload"
+    - aws s3 cp ./web_content s3://$S3_BUCKET/ --recursive --region $AWS_DEFAULT_REGION
+    - echo "Content Upload is successful"
+    - sed -i 's/test/$ASG_NAME/g' ./asg_config.json
+    - cat asg_config.json
+    - echo "Configuration preparation has been completed"
+
 deploy to staging:
   stage: deploy
   environment: 
@@ -8,11 +24,10 @@ deploy to staging:
   only:
     - master
   script:
-    - echo "Running web_content Upload"
-    - aws s3 cp ./web_content s3://$S3_BUCKET/ --recursive --region $AWS_DEFAULT_REGION
-    - echo "Content Upload is successful"
-    - sed -i 's/test/$ASG_NAME/g' ./asg_config.json
-    - cat asg_config.json
-    - aws autoscaling start-instance-refresh --cli-input-json file://asg_config.json --region $AWS_DEFAULT_REGION'
- #   - 'aws autoscaling start-instance-refresh --auto-scaling-group-name $ASG_NAME --preferences '{"InstanceWarmup": 60, "MinHealthyPercentage": 50}' --region $AWS_DEFAULT_REGION'
+   - |
+    - 'aws autoscaling start-instance-refresh \
+    --auto-scaling-group-name $ASG_NAME \
+    --preferences '{"InstanceWarmup": 60, "MinHealthyPercentage": 50}' \
+    --region $AWS_DEFAULT_REGION'
     - echo "Completed the deployment workflow"
+
