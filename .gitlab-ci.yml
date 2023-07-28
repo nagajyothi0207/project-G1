@@ -13,9 +13,6 @@ build the package:
     - echo "Running web_content Upload"
     - aws s3 cp ./web_content s3://$S3_BUCKET/ --recursive --region $AWS_DEFAULT_REGION
     - echo "Content Upload is successful"
-    - sed -i 's/test/$ASG_NAME/g' ./asg_config.json
-    - cat asg_config.json
-    - echo "Configuration preparation has been completed"
 
 deploy to staging:
   stage: deploy
@@ -25,7 +22,7 @@ deploy to staging:
     - master
   script:
    - |
-    - aws autoscaling start-instance-refresh \
+    aws autoscaling start-instance-refresh \
     --auto-scaling-group-name $ASG_NAME \
     --preferences '{"InstanceWarmup": 60, "MinHealthyPercentage": 50}' \
     --region $AWS_DEFAULT_REGION
