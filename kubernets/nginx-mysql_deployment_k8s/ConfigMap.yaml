@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap1
+data:
+  index.html: |
+    <html>
+    <head>
+    <meta http-equiv="Content-Type"
+      content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+    <!-- give a suitable heading using h1 tag-->
+      <h1>Increment and Decrement counter</h1>
+      <div class="container">		
+      <!-- adding button and heading to show the digits -->
+      <!--increment() and decrement() functions on button click-->
+        <button onclick="increment()">+</button>
+        <h2 id="counting"></h2>
+        <script src="function.js"></script>
+        <button onclick="decrement()">-</button>	
+      </div>
+    </body>
+    </html>
+  styles.css: |
+    body {
+      position: absolute;
+      left: 0%;
+      text-align: center;
+    }
+    .container {
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      height: 100%;
+      text-align: center;
+    }
+    button {
+      width: 90px;
+      height: 60px;
+      font-size: 30px;
+      background-color: green;
+      color: honeydew;
+    }
+    button:hover {
+      background-color: greenyellow;
+      color: grey;
+    }
+    h2 {
+      color: black;
+      margin: 0 50px;
+      font-size: 45px;
+    }
+    h1 {
+      font-size: 35px;
+      color: green;
+      text-align: center;
+      padding-left: 10%;
+    }
+  function.js: |
+      let data = 0;
+      document.getElementById("counting").innerText = data;
+      function increment() {
+        data = data + 1;
+        document.getElementById("counting").innerText = data;
+      }
+      //creation of decrement function
+      function decrement() {
+        data = data - 1;
+        document.getElementById("counting").innerText = data;
+      }
+      console.log('The value for counting is:', process.env.counting);
+  .env: |
+     counting=Jyothi
