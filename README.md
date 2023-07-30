@@ -1,92 +1,159 @@
 # Project-G
 
+## Scenario 1 - Terraform, AWS, CICD
+
+In this deployment Terraform deploys highly available auto-scaling group of 3 AWS EC2s (Server fleet A, t2.micro instance type) running nginx to serve public web content, behind a public ALB in the Singapore region. The EC2 servers when booting up will download the web content from a private S3 bucket.
+
+Please refer the IAC deployment configuration in main.tf file
+
+![Architecture Diagram](./Infrastructure%20Setup.png)
 
 
-## Getting started
+### Network Stack - Terraform
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+![Screenshot-1](./Network_stack_terraform.png)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Application Stack - Terraform
 
-## Add your files
+![Screenshot-2](./Application_stack_terraform.png)
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## 1. Terraform Deployment - AWS Infrastructure Setup
+These instructions for setting up Terraform on your local development environment and deploying the infrastructure using Terraform.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/nagajyothi0207/project-g.git
-git branch -M main
-git push -uf origin main
-```
+## Prerequisites
 
-## Integrate with your tools
+Before you begin, make sure you have the following installed on your laptop:
 
-- [ ] [Set up project integrations](https://gitlab.com/nagajyothi0207/project-g/-/settings/integrations)
+1. **Terraform**: Install Terraform on your machine. You can download the latest version (**required_version = ">= 1.2.0"**) from the official website: [Terraform Downloads](https://www.terraform.io/downloads.html).
 
-## Collaborate with your team
+2. **Git**: Ensure you have Git installed to clone the project repository. You can download Git from [here](https://git-scm.com/downloads).
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+3. **AWS Account**: Sign up for an account with your AWS Account where you want to deploy the infrastructure. Make sure you have the necessary credentials (access keys, tokens, etc.) to authenticate with your AWS Account. Since the IaC code included to provision the VPC,IAM roles and Application services(ec2,alb,asg), the required permissions are needed.
 
-## Test and Deploy
+4. **Text Editor or IDE(Visual Studio Code)**: Choose a text editor or integrated development environment (IDE) of your choice. Popular options include Visual Studio Code.
 
-Use the built-in continuous integration in GitLab.
+## Getting Started
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Follow the steps below to set up the Terraform project and deploy the infrastructure:
 
-***
+1. **Clone the Repository**: Clone the project repository to your local machine using Git. Open your **Git Bash terminal** or command prompt and run the following command:
 
-# Editing this README
+   ```bash
+    git clone https://gitlab.com/nagajyothi0207/project-g.git
+    cd project-g
+    git checkout master
+   ```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+2. **Configure AWS Credentials**: Set up the necessary credentials for your AWS Account. For example, if you are using AWS, configure your AWS access keys and secret access keys using the AWS CLI or environment variables. Refer to the documentation for detailed instructions [AWS CLI Installation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and [iam user with static credential](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html)
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+3.  **Run the Script to complete terraform deployment workflow** The shell script will help to your run the Terraform workflow. 
+    ```bash
+    sh setup.sh
+    ```
 
-## Name
-Choose a self-explaining name for your project.
+4. **[OPTIONAL] Initialize Terraform**: The shell script will help to your run the Terraform workflow. 
+Change into the cloned repository directory and initialize Terraform. This will download the required plugins for your provider.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+   ```bash
+   terraform init
+   ```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+5. **[OPTIONAL] Review and Modify Configuration**: Inspect the Terraform configuration files (usually with `.tf` extension) in the repository. Make any necessary adjustments to suit your specific requirements, such as changing resource names, regions, or instance types.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+6. **[OPTIONAL] Plan the Deployment**: Run the Terraform plan command to see the execution plan without actually deploying the infrastructure. This step will show you what resources Terraform intends to create.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+   ```bash
+   terraform plan -out myplan
+   ```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+7. **[OPTIONAL] Deploy the Infrastructure**: If the plan looks good, you can proceed with the actual deployment. Execute the Terraform apply command to create the infrastructure:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+   ```bash
+   terraform apply myplan
+   ```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+8. **Terraform will print the provisioned Resources outputs.**
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+![Screenshot - deployment results](Terraform_Deployment_Results.png)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+9. **Webpage verification - Successful deployment will show the page like below**
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+click on the terraform output of loadbalancer url. 
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+![Screenshot - webpage verification](./Website_verification.png)
 
-## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## 2. Gitlab CI Setup for Code change deployments
+
+
+### Activities involved to achieve the code change and a successfull deployment using gitlab CI
+1.  AWS Static Credentials to Connect from gitlab to AWS resources for deployment - For maintaining the least previleges, use the policy created above using Terraform deployment
+2. gitlab CICD environment variables configuration
+3. gitlab comes with `main` as a default brach. i have added code to `master` branch for this deployment purpose.
+4. change from main to master. Or [covert_case.sh](convert_case.sh) will help you to add the modified code to `master` branch to trigger the deployment of modified code.
+5. Post Deployment Validation by accessing the same Application LoadBalancer (ALB) url
+
+## Getting Started
+
+Follow the steps below to set up the Gitlab project to deploy the code changes:
+
+1. **Gitlab environment variable Configuration for CICD**
+ Go to the Setting of the repository <https://gitlab.com/nagajyothi0207/project-g.git>, and select the CICD for environment variable setup. Set the environment variable like below.
+
+ ![Screenshot - gitlab environment variable](./gitlab_cicd_env_variables.png)
+
+ Example of S3 bucket name variable:
+
+![Screenshot - gitlab environment variable](./s3_bucket_name_variable.png)
+
+
+
+
+ 2. **Deployment of Code changes to the fleet of EC2 instance runnin in Autoscaling Group**
+   The below script execution will help to modify the [index.hml](web_content/index.html) and submit the Pull Request (PR) to the master branch.
+
+      ```bash
+         sh convert_case.sh feature-request-v10
+      ```
+
+Outcome of the script execution: 
+![Screenshot - code change](./CodeChangeSimilation_script_execution.png)
+
+3. **Pull Request(PR) Approval and Auto Triggering the Gitlab Deployment**
+
+Pull Request (PR Approval from gitlab console) and CICD Deployment
+![Screenshot - PR Approval](./PR_Approval.png)
+
+Successfull CICD Deployment
+![Screenshot - PR Approval](./Successful_deployment.png)
+
+
+5. **Post Deployment Validation**
+
+Post deployment validation - Access/Refresh the ALB url to check the content update from **LOWER** Case to **UPPER** Case.
+![Screenshot - post validation](./Post_deployment_status.png)
+
+## Clean Up the resources
+
+
+1. **Destroy the Infrastructure (Optional)**: If you want to tear down the infrastructure and remove all resources, you can use the Terraform destroy command:
+
+   ```bash
+   terraform destroy
+   ```
+
+   **Note:** Be cautious when using `terraform destroy` as it will permanently delete all resources created by Terraform.
+
+
+ # Further improvements to above architecture 
+
+ 1. **Exposing ALB URL on the custom domain(e.g: app.mycompany.com) helps to remember the application name easy & removing the insecure port 80 and enforcing the port 443 using TLS/SSL Certificate helps to secure the website/Application**
+ 2. **ALB Supports WebApplicationFirewall(WAF), Recommended to use to prevent from Layer 7 Attacks.**
+ 3. **ALB can be exposed over the CloudFront to reduce the latency of by leveraging the CDN features. It helps to further to mitigate from the DDOS.**
+ 4. **The S3 bucket used to store the Web Content should be encrypted using CMK (KMS Key - Managed by Customer)**
+ 5. **MOST IMPORTANT - Last but not least - Avoid Using AWS IAM Static Credentials - ACCESS_KEY and SECRET ACCESS KEY. Dynamic Credentials/ROLES are recommended to Assume per session based access.**
+ 
+## Conclusion
+
+Using AWS Static Credentials (Access Key and Secrets Access Key) is not a best practice. Remember to follow the AWS best practices, version control your Terraform code, and be cautious while performing deployments and destroy actions.
+
