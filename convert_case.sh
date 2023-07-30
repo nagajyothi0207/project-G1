@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 set -o pipefail
-BRANCH=${2}
+BRANCH=${1}
 string="Increment and Decrement counter"
 convert_to_upper=`echo "$string" | awk '{print toupper($0)}'`
 #echo $convert_to_upper
