@@ -120,6 +120,16 @@ resource "aws_iam_policy" "policy" {
           "arn:aws:s3:::${aws_s3_bucket.s3_bucket.id}/*",
           "arn:aws:s3:::${aws_s3_bucket.s3_bucket.id}"
         ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ListKeys",
+          "kms:ListAliases"
+        ],
+        "Resource" : "arn:aws:kms:*:${local.account_id}:key/*"
       }
     ]
   })

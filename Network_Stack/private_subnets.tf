@@ -1,24 +1,24 @@
 resource "aws_subnet" "private_subnet" {
-  count                   = length(data.aws_availability_zones.available.names)
+  for_each = var.private_subnet_numbers
   vpc_id                  = data.aws_vpc.default.id
-  cidr_block              = "172.31.${90+count.index}.0/27"
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  cidr_block              = cidrsubnet(var.vpc_cidr_block, 8, each.value)    #"172.31.${90+count.index}.0/27"
+  availability_zone       = each.key
   map_public_ip_on_launch = false
   tags = {
-    Name = "Private_Subnet-${data.aws_availability_zones.available.names[count.index]}"
+    Name = "Private_Subnet_${each.key}"
   }
 }
 
 
 resource "aws_network_acl" "private_subnet_nacl" {
   vpc_id = data.aws_vpc.default.id
-  subnet_ids = aws_subnet.private_subnet[*].id
+  subnet_ids = values(aws_subnet.private_subnet).*.id
 
   ingress {
     protocol   = "tcp"
     rule_no    = 100
     action     = "allow"
-    cidr_block = aws_subnet.public_subnet[0].cidr_block
+    cidr_block = values(aws_subnet.public_subnet)[0].cidr_block
     from_port  = 80
     to_port    = 80
   }
@@ -27,7 +27,7 @@ resource "aws_network_acl" "private_subnet_nacl" {
     protocol   = "tcp"
     rule_no    = 200
     action     = "allow"
-    cidr_block = aws_subnet.public_subnet[1].cidr_block
+    cidr_block = values(aws_subnet.public_subnet)[1].cidr_block
     from_port  = 80
     to_port    = 80
   }
@@ -35,7 +35,7 @@ resource "aws_network_acl" "private_subnet_nacl" {
     protocol   = "tcp"
     rule_no    = 300
     action     = "allow"
-    cidr_block = aws_subnet.private_subnet[2].cidr_block
+    cidr_block = values(aws_subnet.private_subnet)[2].cidr_block
     from_port  = 80
     to_port    = 80
   }
@@ -72,7 +72,7 @@ resource "aws_network_acl" "private_subnet_nacl" {
     protocol   = "tcp"
     rule_no    = 1000
     action     = "allow"
-    cidr_block = aws_subnet.public_subnet[0].cidr_block
+    cidr_block = values(aws_subnet.public_subnet)[0].cidr_block
     from_port  = 22
     to_port    = 22
   }
@@ -80,7 +80,7 @@ resource "aws_network_acl" "private_subnet_nacl" {
     protocol   = "tcp"
     rule_no    = 500
     action     = "allow"
-    cidr_block = aws_subnet.public_subnet[0].cidr_block
+    cidr_block = values(aws_subnet.public_subnet)[0].cidr_block
     from_port  = 1024
     to_port    = 65535
   }
@@ -107,28 +107,8 @@ resource "aws_network_acl" "private_subnet_nacl" {
   }
 }
 
-resource "aws_eip" "nat_gateway" {
-  domain = "vpc"
-}
 
-resource "aws_nat_gateway" "natgw" {
-  allocation_id = aws_eip.nat_gateway.id
-  subnet_id     = aws_subnet.public_subnet[0].id
-  connectivity_type = "public"
-  tags = {
-    Name = "NATGW"
-  }
-}
 
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id          = data.aws_vpc.default.id
-  service_name    = "com.amazonaws.${data.aws_region.current.name}.s3"
-  route_table_ids = ["${aws_route_table.private_rt.id}"]
-
-  tags = {
-    Name = "my-s3-endpoint"
-  }
-}
 
 
 resource "aws_route_table" "private_rt" {
@@ -143,17 +123,17 @@ resource "aws_route_table" "private_rt" {
 }
 
 resource "aws_route_table_association" "private_a" {
-  subnet_id      = aws_subnet.private_subnet[0].id
+  subnet_id      = values(aws_subnet.private_subnet)[0].id
   route_table_id = aws_route_table.private_rt.id
 }
 
 resource "aws_route_table_association" "private_b" {
-  subnet_id      = aws_subnet.private_subnet[1].id
+  subnet_id      = values(aws_subnet.private_subnet)[1].id
   route_table_id = aws_route_table.private_rt.id
 }
 
 resource "aws_route_table_association" "private_c" {
-  subnet_id      = aws_subnet.private_subnet[2].id
+  subnet_id      = values(aws_subnet.private_subnet)[2].id
   route_table_id = aws_route_table.private_rt.id
 }
 
@@ -163,26 +143,32 @@ resource "aws_security_group" "private_security_group" {
   description = "to allow traffic from private ips"
   vpc_id      = data.aws_vpc.default.id
 
+#Bastion host to connect to the EC2 instances running on Private Subnets
   ingress {
     description = "TLS from VPC"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [aws_subnet.public_subnet[0].cidr_block]
+    cidr_blocks = [values(aws_subnet.public_subnet)[0].cidr_block]
   }
 
+# ALB Traffic from public Subnets
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [aws_subnet.public_subnet[0].cidr_block, aws_subnet.public_subnet[1].cidr_block, aws_subnet.public_subnet[2].cidr_block]
+    cidr_blocks = [values(aws_subnet.public_subnet)[0].cidr_block, values(aws_subnet.public_subnet)[1].cidr_block, values(aws_subnet.public_subnet)[2].cidr_block]
   }
+
+  # VPC Endpoints are deployed on Private Subnets, so, it required to listern internal traffic on 443
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [data.aws_vpc.default.cidr_block]
   }
+
+  # Internet Access for Package download and installation of softwares like nginx/apache
     egress {
     from_port   = 443
     to_port     = 443
