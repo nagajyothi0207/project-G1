@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -34,9 +34,50 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /usr/share/nginx/html
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: config
         configMap:
           name: configmap1
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb-config
 
-
+ #     initContainers:
+ #     - name: init-mysql
+ #       image: mysql:5.7
+ #       env:
+ #        - name: counting
+ #          value: "NagaJyothi"
+ #        - name: MYSQL_HOST
+ #          value: mysql
+ #        - name: MYSQL_PORT
+ #          value: "3306"
+ #        - name: MYSQL_DATABASE
+ #          value: mydb
+ #        - name: MYSQL_ROOT_PASSWORD
+ #          valueFrom:
+ #            secretKeyRef:
+ #              name: mysql-secret
+ #              key: DB_PASSWORD
+ #       command:
+ #       - bash
+ #       - "-c"
+ #       - |
+ #         set -ex
+ #         Generate mysql server-id from pod ordinal index.
+ #         mysql -uroot -h mysql  -p$MYSQL_ROOT_PASSWORD < /docker-entrypoint-initdb.d/initdb.sql
+ #         echo "Completed"
+ #       volumeMounts:
+ #       - name: config
+ #         mountPath: /usr/share/nginx/html
+ #       - name: mysql-initdb
+ #         mountPath: /docker-entrypoint-initdb.d
+ #     volumes:
+ #     - name: config
+ #       configMap:
+ #         name: configmap1
+ #     - name: mysql-initdb
+ #       configMap:
+ #         name: mysql-initdb-config
