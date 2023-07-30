@@ -6,16 +6,16 @@ In this deployment Terraform deploys highly available auto-scaling group of 3 AW
 
 Please refer the IAC deployment configuration in main.tf file
 
-![Architecture Diagram](./Infrastructure%20Setup.png)
+![Architecture Diagram](./screenshots/Infrastructure%20Setup.png)
 
 
 ### Network Stack - Terraform
 
-![Screenshot-1](./Network_stack_terraform.png)
+![Screenshot-1](./screenshots/Network_stack_terraform.png)
 
 ### Application Stack - Terraform
 
-![Screenshot-2](./Application_stack_terraform.png)
+![Screenshot-2](./screenshots/Application_stack_terraform.png)
 
 ## 1. Terraform Deployment - AWS Infrastructure Setup
 These instructions for setting up Terraform on your local development environment and deploying the infrastructure using Terraform.
@@ -74,13 +74,13 @@ Change into the cloned repository directory and initialize Terraform. This will 
 
 8. **Terraform will print the provisioned Resources outputs.**
 
-![Screenshot - deployment results](Terraform_Deployment_Results.png)
+![Screenshot - deployment results](./screenshots/Terraform_Deployment_Results.png)
 
 9. **Webpage verification - Successful deployment will show the page like below**
 
 click on the terraform output of loadbalancer url. 
 
-![Screenshot - webpage verification](./Website_verification.png)
+![Screenshot - webpage verification](./screenshots/Website_verification.png)
 
 
 ## 2. Gitlab CI Setup for Code change deployments
@@ -100,11 +100,11 @@ Follow the steps below to set up the Gitlab project to deploy the code changes:
 1. **Gitlab environment variable Configuration for CICD**
  Go to the Setting of the repository <https://gitlab.com/nagajyothi0207/project-g.git>, and select the CICD for environment variable setup. Set the environment variable like below.
 
- ![Screenshot - gitlab environment variable](./gitlab_cicd_env_variables.png)
+ ![Screenshot - gitlab environment variable](./screenshots/gitlab_cicd_env_variables.png)
 
  Example of S3 bucket name variable:
 
-![Screenshot - gitlab environment variable](./s3_bucket_name_variable.png)
+![Screenshot - gitlab environment variable](./screenshots/s3_bucket_name_variable.png)
 
 
 
@@ -117,21 +117,21 @@ Follow the steps below to set up the Gitlab project to deploy the code changes:
       ```
 
 Outcome of the script execution: 
-![Screenshot - code change](./CodeChangeSimilation_script_execution.png)
+![Screenshot - code change](./screenshots/CodeChangeSimilation_script_execution.png)
 
 3. **Pull Request(PR) Approval and Auto Triggering the Gitlab Deployment**
 
 Pull Request (PR Approval from gitlab console) and CICD Deployment
-![Screenshot - PR Approval](./PR_Approval.png)
+![Screenshot - PR Approval](./screenshots/PR_Approval.png)
 
 Successfull CICD Deployment
-![Screenshot - PR Approval](./Successful_deployment.png)
+![Screenshot - PR Approval](./screenshots/Successful_deployment.png)
 
 
 5. **Post Deployment Validation**
 
 Post deployment validation - Access/Refresh the ALB url to check the content update from **LOWER** Case to **UPPER** Case.
-![Screenshot - post validation](./Post_deployment_status.png)
+![Screenshot - post validation](./screenshots/Post_deployment_status.png)
 
 ## Clean Up the resources
 
