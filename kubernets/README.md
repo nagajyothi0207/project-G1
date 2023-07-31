@@ -18,7 +18,7 @@ Before proceeding, make sure you have the following installed:
 3. Due to Inter Service resolution limiation in Minikube, i am not executing the mysql script using initContainer inside the nginx deployment.
 
 ## Deployment
-Now let’s proceed toward deploying the Kubernetes configuration files that will be creating the Kubernetes resources.
+Now let’s proceed toward deploying the Kubernetes configuration files that will be creating the below Kubernetes resources.
 
 **Nginx and Mysql** deployment have the following configurations.
 
@@ -27,9 +27,16 @@ Now let’s proceed toward deploying the Kubernetes configuration files that wil
 3. **ConfigMap**
 4. **Deployment**
 5. **Service**
+
 ### Step 1: Deploy Nginx and MySQL
 
-We will use Kubernetes Deployments to deploy Nginx and MySQL. The deployment files are already provided in the repository.
+We will use Kubernetes Deployments to deploy Nginx and MySQL. The deployment files are already provided in the repository. 
+
+Change the directory to `kubernets/nginx-mysql_deployment_k8s/` before running the  `kubectl apply` command. 
+
+```bash
+cd nginx-mysql_deployment_k8s/
+```
 
 1. Deploy Nginx and mysql deployments:
 
@@ -77,11 +84,14 @@ Post deployment validation - Access the nginx page.
 Step -1: Get the mysql Service IP to run the curl/telnet command from nginx Pod.
 
 Step 2: Do the port-forwarding if you're using minikube that not supporting to `ClusterIP`
+
 ```bash
 kubectl.exe get pods
 kubectl.exe port-forward mysql-6c57686c99-xhr7g 3306:3306
 
 ```
+
+Get the Mysql Service expose IP and Nginx Pod to run the connectivity check using curl with telnet on Mysql port.
 
 ```bash
 kubectl.exe get svc mysql | grep mysql | awk  '{ print $3 }'
@@ -120,14 +130,16 @@ kubectl --namespace default port-forward $POD_NAME 3000
 ```
 1. Get your 'admin' user password by running:
 
+```bash
    kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-
+```
 
 2. The Grafana server can be accessed via port 80 on the following DNS name from within your cluster:
 
    grafana.default.svc.cluster.local
 
    Get the Grafana URL to visit by running these commands in the same shell:
+
    ```bash 
      export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")       
      kubectl --namespace default port-forward $POD_NAME 3000
@@ -145,7 +157,11 @@ By default, the Prometheus and Grafana services are exposed as ClusterIP. To acc
 
 ```bash
 kubectl port-forward svc/prometheus-server 9090:9090
+
+(or)
+
 kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-np
+
 minikube service prometheus-server-np
 ```
 
