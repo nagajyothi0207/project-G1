@@ -4,7 +4,33 @@
 
 In this deployment Terraform deploys highly available auto-scaling group of 3 AWS EC2s (Server fleet A, t2.micro instance type) running nginx to serve public web content, behind a public ALB in the Singapore region. The EC2 servers when booting up will download the web content from a private S3 bucket.
 
+## Assumptions:
+1) **SSH key is already generated or uploaded to AWS - change the key name to represent your own key before running the terraform commands**
+2) **AWS credentials with admin previlges are configured in your local laptop to provision the resources using terraform**
+3) **To make the code change and deploy using gitlab-ci, it required repository permissions to push the code**
+4) **A IAM user with access key and secret key for github access**
+5) **Change the index.html page content to to lower case before similating the deployment using gitlab-ci**
+
 Please refer the IAC deployment configuration in main.tf file
+
+By using this terraform stack the below resources will be provisioned to accomodate this architecture design:
+
+Network stack:
+1) A VPC with CIDR range of 172.31.0.0/16
+2) 3 Public and Private subnets with NACL's and Route tables
+3) 1 EIP for NAT gateway
+4) 1 Internet gateway
+5) VPC endpoints for s3 (gateway) and SSM (Interface)
+6) public and private security groups
+
+Application Stack:
+1) **[optinal]** A Bastion server to connect private instances.
+2) Autoscaling group spin up the required Ec2 on launch with the user data script is added to the launch congiguration
+3) S3 bucket will be created along with the content to load the webpage
+4) IAM role will be created along with policy attached with ec2 and ssm policy permissions.
+5) Load balancer will be created with the alb target group and listeners attached.
+
+
 
 ![Architecture Diagram](./screenshots/Infrastructure%20Setup.png)
 
