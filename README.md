@@ -25,10 +25,11 @@ By using this terraform stack the below resources will be provisioned to accomod
 
 **Application Stack:**
 1) **[optinal]** A Bastion server to connect private instances.
-2) Autoscaling group spin up the required Ec2 on launch with the user data script is added to the launch congiguration
-3) S3 bucket will be created along with the content to load the webpage
-4) IAM role will be created along with policy attached with ec2 and ssm policy permissions.
+2) Autoscaling group with the user-data script to install & configure the nginx webserver and download the web_content from s3 bucket
+3) S3 bucket will be created along with the webcontent(index.html,css and js files)
+4) IAM role with required permissions on the resources.
 5) Load balancer will be created with the alb target group and listeners attached.
+6) IAM Policy with all the resources created. **Note** The same policy can be used for CICD deployments if needed to maintain the least previleges on the AWS iam user created for gitlab deployments.
 
 
 
