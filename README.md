@@ -173,12 +173,13 @@ Post deployment validation - Access/Refresh the ALB url to check the content upd
 
 
  # Further improvements to above architecture 
-
- 1. **Exposing ALB URL on the custom domain(e.g: app.mycompany.com) helps to remember the application name easy & removing the insecure port 80 and enforcing the port 443 using TLS/SSL Certificate helps to secure the website/Application**
- 2. **ALB Supports WebApplicationFirewall(WAF), Recommended to use to prevent from Layer 7 Attacks.**
- 3. **ALB can be exposed over the CloudFront to reduce the latency of by leveraging the CDN features. It helps to further to mitigate from the DDOS.**
- 4. **The S3 bucket used to store the Web Content should be encrypted using CMK (KMS Key - Managed by Customer)**
- 5. **MOST IMPORTANT - Last but not least - Avoid Using AWS IAM Static Credentials - ACCESS_KEY and SECRET ACCESS KEY. Dynamic Credentials/ROLES are recommended to Assume per session based access.**
+ 1. **The IaC Code can be deployed using CICD pipelines like gitlab-ci, which will help to further track the IaC changes and Approval for any infra modifications.**
+ 2. **IaC Scanning can be impletemented in the cicd pipeline to catch and prevent any misconfiguration that potentially lead to expose the data.** 
+ 3. **Exposing ALB URL on the custom domain(e.g: app.mycompany.com) helps to remember the application name easy & removing the insecure port 80 and enforcing the port 443 using TLS/SSL Certificate helps to secure the website/Application**
+ 4. **ALB Supports WebApplicationFirewall(WAF), Recommended to use to prevent from Layer 7 Attacks.**
+ 5. **ALB can be exposed over the CloudFront to reduce the latency of by leveraging the CDN features. It helps to further to mitigate from the DDOS.**
+ 6. **The S3 bucket used to store the Web Content should be encrypted using CMK (KMS Key - Managed by Customer)**
+ 7. **MOST IMPORTANT - Last but not least - Avoid Using AWS IAM Static Credentials - ACCESS_KEY and SECRET ACCESS KEY. Dynamic Credentials/ROLES are recommended to Assume per session based access.**
  
 ## Conclusion
 
