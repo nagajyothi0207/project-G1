@@ -185,4 +185,4 @@ Post deployment validation - Access/Refresh the ALB url to check the content upd
 
 Using AWS Static Credentials (Access Key and Secrets Access Key) is not a best practice. Remember to follow the AWS best practices, version control your Terraform code, and be cautious while performing deployments and destroy actions.
 
-# Please Refere to Scenario 2 here - [Nginx, MySQL Prometheus and Grafana deployment on K8S](./kubernets/README.md)
+# Please Refere to Scenario 2 here - [Nginx, MySQL Prometheus and Grafana deployment on K8S](./kubernets)
