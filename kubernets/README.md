@@ -1,4 +1,4 @@
-# Scenario2:
+# Scenario 2:
 
 # Kubernetes Deployment for Nginx and MySQL with Monitoring using Prometheus and Grafana
 

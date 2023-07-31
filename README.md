@@ -2,7 +2,7 @@
 
 ## Scenario 1 - Terraform, AWS, CICD
 
-In this deployment Terraform deploys highly available auto-scaling group of 3 AWS EC2s (Server fleet A, t2.micro instance type) running nginx to serve public web content, behind a public ALB in the Singapore region. The EC2 servers when booting up will download the web content from a private S3 bucket.
+In this scenario Terraform deploys highly available auto-scaling group of 3 AWS EC2s (Server fleet A, t2.micro instance type) running nginx to serve public web content, behind a public ALB in the Singapore region. The EC2 servers when booting up will download the web content from a private S3 bucket.
 
 ## Assumptions:
 1) **SSH key is already generated or uploaded to AWS - change the key name to represent your own key before running the terraform commands**
@@ -11,11 +11,11 @@ In this deployment Terraform deploys highly available auto-scaling group of 3 AW
 4) **A IAM user with access key and secret key for github access**
 5) **Change the index.html page content to to lower case before similating the deployment using gitlab-ci**
 
-Please refer the IAC deployment configuration in main.tf file
+Please refer the IAC deployment configuration in `main.tf` file
 
 By using this terraform stack the below resources will be provisioned to accomodate this architecture design:
 
-Network stack:
+**Network stack:**
 1) A VPC with CIDR range of 172.31.0.0/16
 2) 3 Public and Private subnets with NACL's and Route tables
 3) 1 EIP for NAT gateway
@@ -23,7 +23,7 @@ Network stack:
 5) VPC endpoints for s3 (gateway) and SSM (Interface)
 6) public and private security groups
 
-Application Stack:
+**Application Stack:**
 1) **[optinal]** A Bastion server to connect private instances.
 2) Autoscaling group spin up the required Ec2 on launch with the user data script is added to the launch congiguration
 3) S3 bucket will be created along with the content to load the webpage
@@ -183,3 +183,4 @@ Post deployment validation - Access/Refresh the ALB url to check the content upd
 
 Using AWS Static Credentials (Access Key and Secrets Access Key) is not a best practice. Remember to follow the AWS best practices, version control your Terraform code, and be cautious while performing deployments and destroy actions.
 
+# Please Refere to Scenario 2 here - [Nginx, MySQL Prometheus and Grafana deployment on K8S](./kubernets/README.md)
